@@ -19,11 +19,15 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.conf import settings
 
-urlpatterns = [
+url_patterns = [
     path('admin/', admin.site.urls),
     path('annotation/', include('annotation.urls')),
     path('', include('user.urls')),
 
+]
+
+url_patterns = [
+    url(r'^dumbcharades/', include(url_patterns))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

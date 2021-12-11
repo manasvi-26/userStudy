@@ -17,3 +17,7 @@ urlpatterns = [
     url(r'^nextvideo3$', views.render_next_video3, name='render_next_video3'),
 
 ]
+
+url_patterns = [
+    url(r'^dumbcharades/', include(url_patterns))
+]
