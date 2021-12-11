@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Dumb Charades</title>
+    <meta charset="utf-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    
+    <!-- Compiled and minified CSS -->
+      <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
+
+      <!-- Website css -->
+      <link rel="stylesheet" href='{% static "css/temp.css" %}'>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+      <!-- Compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+  <div id="info">
+    <h4 class="teal-text col l12 m12 s12"> How Realistic Is The Action?  </h4>
+    <p style="font-size: 24px; margin-left:400px ;" id="action"></p> 
+    <p style="font-size: 24px;" id="time"></p> 
+
+    <!-- <p style="font-size: 24px;" id="score"></p>  -->
+  </div>
+    <script src='{% static "js/three.js" %}'></script>
+    <script src='{% static "js/StereoEffect.js" %}'></script>
+    <script src='{% static "js/OrbitControls.js" %}'></script>
+    <script src='{% static "js/inflate.min.js" %}'></script>
+    <script src='{% static "js/FBXLoader.js" %}'></script>
+    <script src='{% static "js/render2.js" %}'></script>
+
+    
+    <div style="top: 25%;  right:40%; font-size:20px;"  id="all_buttons">
+      <input type="button" class="btn" value="Left View" onclick="left()">
+      <input type="button" class="btn" value="Right View" onclick="right()">
+      <input type="button" class="btn" value="Front View" onclick="front()">
+      <p></p>
+      <input type="button" class="btn" value="Replay" id="replay" onclick="replay()" disabled>
+
+      <form id='formResponse'>
+        <div class="input-field">
+           <p>
+              <label>
+                <input name="guess" value="1" type="radio" id="option1" checked/>
+                <span id="o1" style="color:grey">Unrealistic</span>
+              </label>
+           </p>
+            <p>
+              <label>
+                <input name="guess" value="2" type="radio" id="option2"/>
+                <span id="o2" style="color:grey">Neutral</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input name="guess" value="3" type="radio" id="option3"/>
+                <span id="o3" style="color:grey">Netural</span>
+              </label>
+           </p>
+            <p>
+              <label>
+                <input name="guess" value="4" type="radio" id="option4"/>
+                <span id="o4" style="color:grey">Realistic</span>
+              </label>
+            </p>
+            <p>
+            </p>
+        </div>
+
+        <div class="input-field">
+          <input type="submit" class="btn" value="Submit" id="submit_button" disabled>
+        </div>  
+      </form>
+    </div>
+
+   <div id="overlay"> 
+    <div id="countdown"></div>
+   </div>
+
+</body>
+</html>

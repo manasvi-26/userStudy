@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Dumb Charades</title>
+    <meta charset="utf-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    
+    <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+      <!-- Website css -->
+      <link rel="stylesheet" href='{% static "css/style.css" %}'>
+
+      <!-- Compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+      
+    </style>
+    <script> 
+      function displayTnC() {
+        alert("Clicking on 'SUBMIT' indicates your consent for sharing information you provide and responses in the sessions you participate in.\n  All information you provide is considered completely confidential. Your name and any identifying information will not appear in any publication resulting from this study. \n  Data collected during this study will be retained indefinitely in locked drawers or on password protected computers in a secure location accessible only to researchers associated with this project.\n  Electronic data will be de-identified before being stored. Thank you for your assistance in this project.");  
+      }
+    </script>  
+  </head>
+  <body style="background-color: white;">
+    <div id="info">
+    <h4 class="teal-text col l12 m12 s12"> Please Enter Your Details </h4>
+      <p style="font-size: 19px;" id="time"></p> 
+    </div>
+    <script src='{% static "js/submitUserDetails.js" %}'></script>
+    <div style="top: 20%;  font-size:18px" class="white-text" id="all_buttons">
+
+      <form id="userform">
+        <div class="input-field">
+           <p>
+              <label style="font-size: unset">Name</label>
+                <input type="text" id="name" style="width: unset" />
+           </p>
+            <p>
+              <label style="font-size: unset">Age</label>
+                <input type="text" id="age" style="width: unset" />
+            </p>
+            <p>
+              <label style="font-size: unset">Affiliation
+              </label>
+                <select name="affiliation" id='affilation' style="display: unset; width: 20%;">
+                  <option value="Student">Student</option>
+                  <option value="Researcher">Researcher</option>
+                  <option value="Faculty">Faculty</option>
+                </select>
+            </p>
+            <p>
+              <label style="font-size: unset">Gender
+              </label>
+                <select name="gender" id='gender' style="display: unset; width: 20%;">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </p>
+              
+        </div>
+
+        <div class="input-field">
+          <input type="submit" class="btn" id="submit_button" value = "Submit">
+        </div>  
+        <p>
+          <label onclick="displayTnC()" >
+            <!-- <input id="TnC" type="checkbox" unchecked /> -->
+            <span class='TnC' style="display: unset; width: 20%;" >Terms & Conditions </span>
+          </label>
+        </p>
+      </form>
+    </div>
+
+  </body>
+</html>

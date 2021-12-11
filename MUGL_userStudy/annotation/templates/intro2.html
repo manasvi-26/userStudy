@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Dumb Charades</title>
+    <meta charset="utf-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    
+    <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+      <!-- Website css -->
+      <link rel="stylesheet" href='{% static "css/style.css" %}'>
+
+      <!-- Compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- <script src='{% static "js/nextround.js" %}'></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+
+    </style>
+
+  </head>
+  <body style="background-color: white;">
+    <div id="container">
+      <h3 class="teal-text"> Welcome to round 2 <span id='roundnumber'></span>
+        <br/>
+      </h3>
+      <!-- <iframe src="https://giphy.com/embed/11sBLVxNs7v6WA" width="480" height="217" frameBorder="0" class="giphy-embed" allowFullScreen></iframe> -->
+      
+      <br/>
+      <br/>
+
+      <h4  class="teal-text">In this round you are given an action and a set of 4 options and you're supposed to decide how realistic the action looks</h4>
+      
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+
+      <h4 class="teal-text">
+        Press the button below to continue to the next round
+      </h4>
+        <form action="/annotation/round2">
+        <div class="input-field">
+        <input type="submit" class="btn" id="btnSubmit" value = "Proceed">
+        </div>  
+      </form>
+    </div>
+
+  </body>
+</html>
