@@ -32,8 +32,8 @@ def fill_database(filename):
             all_truth_files.append(curr_file)
 
 
-    total_sets = 5
-    total_questions = 2
+    total_sets = 10
+    total_questions = 10
 
 
     for i in range(total_sets):
