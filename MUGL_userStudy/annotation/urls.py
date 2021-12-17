@@ -1,7 +1,5 @@
 from django.conf.urls import url
 from . import views
-from django.conf.urls import include
-
 
 urlpatterns = [
     url(r'^round1$', views.round1, name='round1'),
@@ -18,8 +16,4 @@ urlpatterns = [
     url(r'^nextvideo$', views.render_next_video, name='render_next_video'),
     url(r'^nextvideo3$', views.render_next_video3, name='render_next_video3'),
 
-]
-
-url_patterns = [
-    url(r'^dumbcharades/', include(url_patterns))
 ]

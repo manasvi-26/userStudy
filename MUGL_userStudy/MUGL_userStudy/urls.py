@@ -1,5 +1,4 @@
 """MUGL_userStudy URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
 Examples:
@@ -15,19 +14,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.conf.urls import include,url
+from django.conf.urls import include
 from django.conf.urls.static import static
 from django.conf import settings
 
-url_patterns = [
+urlpatterns = [
     path('admin/', admin.site.urls),
     path('annotation/', include('annotation.urls')),
     path('', include('user.urls')),
 
-]
-
-url_patterns = [
-    url(r'^dumbcharades/', include(url_patterns))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
