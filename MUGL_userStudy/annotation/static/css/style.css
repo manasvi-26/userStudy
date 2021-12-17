@@ -10,7 +10,7 @@ body {
 
 	background-color: #000;
 	margin: 0px;
-	overflow: hidden;
+	overflow: auto;
 }
 
 #all_buttons{

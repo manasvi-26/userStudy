@@ -11,6 +11,8 @@ var clock = new THREE.Clock();
 let clock_start_time;
 let isSubmit = false;
 let model;
+let start = false;
+let question;
 
 const sleep = time => {
 	return new Promise((resolve) => setTimeout(resolve, time));
@@ -78,7 +80,7 @@ function loadModel(filePath){
 
 		for (let [key, value] of Object.entries(joints)) {
 			joints[key] = object.getObjectByName(key)
-			Tpose.push(object.getObjectByName(key).quaternion)
+			Tpose.push(joints[key].quaternion)
 		}
 
 		console.log(Tpose)
@@ -98,7 +100,7 @@ function reset(){
 	counter = 0 //reset animation counter
 	clock_start_time = Date.now() // reset timer
 	pause = false // play animation
-
+	start = false
 	document.getElementById("submit_button").disabled = true;
 	document.getElementById("replay").disabled = true;
 
@@ -155,7 +157,7 @@ function init() {
 
 
 	// model
-	loadModel('/media/temp/TEST2.fbx')
+	loadModel('/media/temp/TEST3.fbx')
 
 
 	renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -212,11 +214,32 @@ function timer(){
 	return (30 - Math.min(30, parseInt((Date.now() - clock_start_time )/1000)))
 }
 
+function startTimer(){
+	if(start)return true;
+	let wait_time =parseInt((Date.now() - clock_start_time ))/1000 > 2 ? true : false
+	if(wait_time == true){
+		start = true;
+		clock_start_time = Date.now();
+	}
+	document.getElementById("time").innerHTML = "Time left : 30s"
+	return wait_time;
+}
+
 function animate() {
 	// console.log(camera.position)
+	if(!isSubmit && timer() <= 0){
+		isSubmit = true;
+		SubmitGuess();
+	}
+	
 	requestAnimationFrame( animate );
 	
-	if(!isSubmit) document.getElementById("time").innerHTML = "Time left: " + timer() + " seconds"
+	renderer.render( scene, camera );
+	document.getElementById("question").innerHTML = "Question :" + question
+
+	if(startTimer() == false)return;
+
+	if(!isSubmit) document.getElementById("time").innerHTML = "Time left :" + timer() + "s"
 	
 
 	if(Date.now() - start_time > 150 && !pause){
@@ -235,9 +258,12 @@ function animate() {
 				
 				let bone = joints_index[joint] 
 					if(joint == 0){
+
 						continue
 					}
 					else{
+
+
 						joints[bone].setRotationFromQuaternion( new THREE.Quaternion(
 							actions[counter][joint][0], 
 							actions[counter][joint][1],
@@ -249,7 +275,6 @@ function animate() {
 		}
 	}
 
-	renderer.render( scene, camera );
 
 }
 
@@ -266,7 +291,7 @@ function off(){
 
 function on(){
 	document.getElementById("overlay").style.display = "block";
-	var timeleft = 3;
+	var timeleft = 4;
 	
 	var timer = setInterval(function(){
 
@@ -284,7 +309,6 @@ function on(){
 
 
 function SubmitGuess(){
-	console.log("Im called twice? : render submit")
 	
 	isSubmit = true;
 	guess = $("input[name='guess']:checked").val();
@@ -301,12 +325,12 @@ function SubmitGuess(){
 		success: function(response){
 			console.log(response)
 			if (response.status)
-				$('.' + guess.replaceAll('_','')).css('color','green');
+				$('.' + guess.replaceAll('_',''))
 			else
 			{
 				console.log("red color is ",guess )
-				$('.' + guess.replaceAll('_','')).css('color','red');
-				$('.' + response.correctAnswer.replaceAll('_','')).css('color','green');
+				$('.' + guess.replaceAll('_',''))
+				$('.' + response.correctAnswer.replaceAll('_',''))
 			}
 
 			let timeleft = 2;
@@ -316,9 +340,9 @@ function SubmitGuess(){
 				if(timeleft<=0){
 					clearInterval(wait);
 					console.log("calling on ..")
-					$('.' + guess.replaceAll('_','')).css('color','grey');
+					$('.' + guess.replaceAll('_',''))
 					$('.' + guess.replaceAll('_','')).prop('checked', false);
-					$('.' + response.correctAnswer.replaceAll('_','')).css('color','grey');
+					$('.' + response.correctAnswer.replaceAll('_',''))
 
 					on();
 				}  
@@ -344,6 +368,7 @@ function render_video(){
 
 			let action = response.action
 			let path = response.path
+			question = response.question
 			action = action.replaceAll('_', ' ')
 			console.log(action)
 			$('#o1').html(action);

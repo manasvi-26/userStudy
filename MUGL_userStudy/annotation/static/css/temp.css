@@ -34,10 +34,13 @@ body {
 
 #time {
 	float: right;
+	margin-right:15px;
+
 }
 
-#score {
+#question {
 	float: left;
+	margin-left:15px;
 }
 #countdown {
 	position: absolute;

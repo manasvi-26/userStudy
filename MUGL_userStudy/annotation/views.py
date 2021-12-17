@@ -103,23 +103,21 @@ def render_next_video3(request):
 	pending = guess_class.objects.filter(pending=True, user=user)
 	guess = pending.first()
 	print("GUESS iS ", guess)
+	done = guess_class.objects.filter(pending=False, user=user).values('files')
+	question = done.count() // 2 + 1
 	if guess is not None :
 		model_action_files = guess.files.all()
 		print("model files in guess is", model_action_files)
 		return JsonResponse({
 			'mugl_path' : model_action_files[0].path,
 			'truth_path' : model_action_files[1].path,
-			'action' :  model_action_files[0].action
+			'action' :  model_action_files[0].action,
+			'question' : question
+
 		})
 
-	done = guess_class.objects.filter(pending=False, user=user).values('files')
 	remaining = all_files.exclude(pk__in=done)
 
-	# print("ALL FILES ARE ", all_files)
-
-	# print("REMAINING VIDEOS ARE ", remaining)
-	
-	# print("NEXT VIDEOS ARE ", next_videos)
 	if remaining.all().first() is None: 
 		user.current_round += 1
 		user.save()
@@ -137,6 +135,7 @@ def render_next_video3(request):
 				'action' : next_videos[0].action,
 				'mugl_path' : next_videos[0].path,
 				'truth_path' : next_videos[1].path,
+				'question' : question
 			
 			})
 
@@ -150,19 +149,21 @@ def render_next_video(request):
 	user, guess_class, all_files,current_round = get_details(request)
 
 	pending = guess_class.objects.filter(pending=True, user=user)
+	
 	guess = pending.first()
+	done = guess_class.objects.filter(pending=False, user=user).values('file')
 
-
+	question = done.count() + 1
+	print("QUESTION ", question + 1)
 
 	if guess is not None:
 		# print("RETURNING SAME FILE AGAIN",guess.file.action)
 		return JsonResponse({
 					'action' : guess.file.action,
 					'path' : guess.file.path,
-					
+					'question' : question
 				})
 
-	done = guess_class.objects.filter(pending=False, user=user).values('file')
 	remaining = all_files.exclude(pk__in=done)
 	video = remaining.first()
 
@@ -183,6 +184,7 @@ def render_next_video(request):
 	return JsonResponse({
 				'action' : video.action,
 				'path' : video.path,
+				'question' : question
 			})
 
 

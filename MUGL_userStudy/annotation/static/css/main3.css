@@ -24,9 +24,9 @@ button {
 
 #info {
 	position: absolute;
-	top: 0px;
+	/* top: 0px; */
 	width: 100%;
-	padding: 10px;
+	padding: 3px;
 	box-sizing: border-box;
 	text-align: center;
 	-moz-user-select: none;
@@ -35,6 +35,17 @@ button {
 	user-select: none;
 	pointer-events: none;
 	z-index: 1; /* TODO Solve this in HTML */
+}
+#time {
+	float: right;
+	margin-right:15px;
+	font-weight: bold;
+}
+
+#question {
+	float: left;
+	margin-left:15px;
+	font-weight: bold;
 }
 
 a, button, input, select {

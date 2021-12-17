@@ -4,11 +4,13 @@ let model = undefined;
 
 let timer= 0; 
 let start_time = Date.now();
+let isSubmit = false;
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
 import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
 
+let clock_start_time;
 
 let joints_index = {
     0 : 'pelvis',
@@ -56,6 +58,12 @@ function loadAction(filePath,scene){
         scene.userData.actions = actions;
         // console.log(scene.userData.actions)
     })
+}
+function reset(){
+
+	isSubmit = false
+	clock_start_time = Date.now() // reset timer
+
 }
 
 function loadModel(filePath,scene){
@@ -112,7 +120,7 @@ function init() {
     const content = document.getElementById( 'content' );
 
     let modelName = ["truth", "mugl", "action2motion", "sagcn"]
-    let actionPaths = ["../actions/sample0.json", "../actions/quat_data2.json"]
+    // let actionPaths = ["../actions/sample0.json", "../actions/quat_data2.json"]
 
     for ( let i = 0; i < 4; i ++ ) {
 
@@ -148,7 +156,7 @@ function init() {
         scene.userData.controls = controls;
 
         
-	    loadModel('/media/temp/TEST2.fbx',scene)
+	    loadModel('/media/temp/TEST3.fbx',scene)
         
         scene.add( new THREE.HemisphereLight( 0xaaaaaa, 0x444444 ) );
         
@@ -183,7 +191,20 @@ function updateSize() {
 
 }
 
+function get_time(){
+	return (30 - Math.min(30, parseInt((Date.now() - clock_start_time )/1000)))
+}
+
 function animate() {
+
+    if(!isSubmit && get_time() <= 0){
+		isSubmit = true;
+		SubmitGuess();
+    }
+    
+    if(!isSubmit) document.getElementById("time").innerHTML = "Time left :" + get_time() + "s"
+    
+    
 
     render();
     requestAnimationFrame( animate );
@@ -297,9 +318,7 @@ function on(){
 
 function SubmitGuess(){
 	
-	// isSubmit = true;
-	// guess = $("input[name='guess']:checked").val();
-	// console.log("GUESS IS ", guess)
+	isSubmit = true;
 
 	$.ajax({
 		url: 'submit1',
@@ -329,6 +348,12 @@ function SubmitGuess(){
 }
 
 
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+
 function render_video(){
 
 	$.ajax({
@@ -338,11 +363,16 @@ function render_video(){
 
 			let action = response.action
 			let mugl_path = response.mugl_path
-			let truth_path = response.truth_path
+            let truth_path = response.truth_path
+            let question = response.question
+	        document.getElementById("question").innerHTML = "Question :" + question
+
             let paths = []
 
-            document.getElementById("action").innerHTML = "Action Name: " + action
+            document.getElementById("action").innerHTML = "Action Name: " + action.replaceAll('_',' ')
             
+            paths.push(response.truth_path)
+            paths.push(response.mugl_path)
             paths.push(response.truth_path)
             paths.push(response.mugl_path)
 
@@ -351,7 +381,9 @@ function render_video(){
             scenes.forEach( function ( scene ) {
                 loadAction(paths[count],scene)
                 count+=1
+                console.log(count)
             })
+            reset();
 		},
 		error: function(response){
             console.log(response)

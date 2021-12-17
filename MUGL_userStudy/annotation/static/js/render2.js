@@ -11,6 +11,7 @@ var clock = new THREE.Clock();
 let clock_start_time;
 let isSubmit = false;
 let model;
+let question;
 
 const sleep = time => {
 	return new Promise((resolve) => setTimeout(resolve, time));
@@ -149,7 +150,7 @@ function init() {
 
 
 	// model
-	loadModel('/media/temp/TEST2.fbx')
+	loadModel('/media/temp/TEST3.fbx')
 
 
 	renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -208,9 +209,16 @@ function timer(){
 
 function animate() {
 	// console.log(camera.position)
+	
+	if(!isSubmit && timer() <= 0){
+		isSubmit = true;
+		SubmitGuess();
+	}
+	
 	requestAnimationFrame( animate );
 	
-	if(!isSubmit) document.getElementById("time").innerHTML = "Time left: " + timer() + " seconds"
+
+	if(!isSubmit) document.getElementById("time").innerHTML = "Time left: " + timer() + "s"
 	
 
 	if(Date.now() - start_time > 150 && !pause){
@@ -260,7 +268,7 @@ function off(){
 
 function on(){
 	document.getElementById("overlay").style.display = "block";
-	var timeleft = 3;
+	var timeleft = 4;
 	
 	var timer = setInterval(function(){
 
@@ -320,8 +328,11 @@ function render_video(){
 			
 			let action = response.action
 			let path = response.path
-            action = action.replaceAll('_', ' ')
-			document.getElementById("action").innerHTML = "Action Name: " + action
+			question = response.question
+			action = action.replaceAll('_', ' ')
+
+			document.getElementById("question").innerHTML = "Question :" + question			
+			document.getElementById("action").innerHTML =   "How Realistic Is The Action: "+  action + "?"
             
 			loadAction(path)
 		},

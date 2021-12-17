@@ -28,7 +28,7 @@
 				position: absolute;
 				top: 0; width: 100%;
 				z-index: 1;
-				padding: 3em 0 0 0;
+				padding-bottom: 8em 0 0 0;
 			}
 
 			#c {
@@ -67,17 +67,32 @@
 
 		<div id="content">
 			<!-- <div id="info"><a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - multiple elements - webgl</div> -->
-			<div id="info"><h5 id="action"> Action Name : </h5></div>
+			<h5 id="question"></h5> 
+
+			<div id="info"><h5 id="action" style="font-weight: bold;"> Action Name : </h5></div>
+			<h5 id="time"></h5>
+
 			<br/>
+			<br/>
+			<div id="info"><h6>Please rank your preference from left to right, where left corresponds to least realistic action and right to most realistic action</h6></div>
+			
+			<br/>
+			<br/>
+
+			<!-- <h5>Please rank </h5> -->
+			<!-- <br/> -->
 			<br/>
 		</div>
 		
 		<!-- <script type="module" src="js/main.js"></script> -->
 		<script type="module" src='{% static "js/render3.js" %}'></script>
+		<script type="module" src='{% static "js/dnd.js" %}'></script>
+
 
 		<br/>
 		<br/>
 		<br/>
+		
 		<div class="container">
 			<div draggable="true" class="box">Scene 1</div>
 			<div draggable="true" class="box">Scene 2</div>
@@ -85,7 +100,7 @@
 			<div draggable="true" class="box">Scene 4</div>
 			<br/>
 			<form id='formResponse'>
-				<div class="input-field">
+				<div class="input-field" style="padding-left: 200%;">
 					<input type="submit" class="btn" value="Submit" id="submit_button" >
 				</div>
 			</form>
