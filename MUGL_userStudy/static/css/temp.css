@@ -1,0 +1,67 @@
+/* Custom Stylesheet */
+
+
+body {
+	color: #fff;
+	font-family:Monospace;
+	font-size:13px;
+	text-align:center;
+	font-weight: bold;
+
+	background-color: #000;
+	margin: 0px;
+	overflow: hidden;
+}
+
+#all_buttons{
+	position: absolute;
+    top: 55%;
+    width: 98%;
+}
+
+#info {
+	position: absolute;
+	/* padding: 20px; */
+	width: 100%;
+	text-align: center;
+	color: #000000;
+}
+
+#info h4,
+#info p{
+	display: inline-block;
+}
+
+#time {
+	float: right;
+	margin-right:15px;
+
+}
+
+#question {
+	float: left;
+	margin-left:15px;
+}
+#countdown {
+	position: absolute;
+	padding: 10px;
+	width: 100%;
+	text-align: center;
+	color: #ffffff;
+	font-size: 100px;
+	padding-top: 20%;
+}
+#overlay {
+	position: fixed; /* Sit on top of the page content */
+	display: none; /* Hidden by default */
+	width: 100%; /* Full width (cover the whole page) */
+	height: 100%; /* Full height (cover the whole page) */
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(100,100,100,1); /* Black background with opacity */
+	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+	cursor: pointer; /* Add a pointer on hover */
+}
+
