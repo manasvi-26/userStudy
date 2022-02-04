@@ -137,7 +137,7 @@ function reset(){
 function loadAction(filePath){
 	
 	let loader2 = new THREE.FileLoader();
-	loader2.load( "/media/" + filePath, function( data ) {
+	loader2.load( "/" + filePath, function( data ) {
 		actions = JSON.parse(data);
 		actions = actions.rotation
 	})
