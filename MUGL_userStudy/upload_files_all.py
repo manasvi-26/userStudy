@@ -9,7 +9,7 @@ from tqdm import tqdm
 def fill_database(filename):
 
 
-    mugl_folder = os.path.join(filename,"MUGL_ALL")
+    mugl_folder = os.path.join(filename,"MUGL")
     truth_folder = os.path.join(filename,"GROUND_TRUTH")
 
     mugl = os.listdir(mugl_folder)

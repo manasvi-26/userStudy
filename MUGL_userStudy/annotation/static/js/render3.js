@@ -12,7 +12,15 @@ import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm
 
 let clock_start_time;
 
-let joints_index = {
+let model_index_dict = {
+    'Scene 1' : "MUGL++",
+    'Scene 2' : "GROUND_TRUTH",
+    'Scene 3' : "MUGL",
+    'Scene 4' : "ACTOR",
+}
+
+let joints_index_muglold = {
+
     0 : 'pelvis',
     1 : 'left_hip',
     2 : 'right_hip',
@@ -37,6 +45,62 @@ let joints_index = {
     21: 'right_wrist',
     22: 'right_eye_smplhf',
     23: 'head'
+}
+
+let joints_index = {
+	0:'pelvis',
+    1:'left_hip',
+    2:'right_hip',
+    3:'spine1',
+    4:'left_knee',
+    5:'right_knee',
+	6:'spine2',
+    7:'left_ankle',
+    8:'right_ankle',
+    9:'spine3',
+    10:'left_foot',
+    11:'right_foot',
+    12:'neck',
+    13:'left_collar',
+    14:'right_collar',
+    15:'head',
+    16:'left_shoulder',
+    17:'right_shoulder',
+    18:'left_elbow',
+    19:'right_elbow',
+    20:'left_wrist',
+    21:'right_wrist',
+    22:'left_index1',
+    23:'left_index2',
+    24:'left_index3',
+    25:'left_middle1',
+    26:'left_middle2',
+    27:'left_middle3',
+    28:'left_pinky1',
+    29:'left_pinky2',
+    30:'left_pinky3',
+    31:'left_ring1',
+    32:'left_ring2',
+    33:'left_ring3',
+    34:'left_thumb1',
+    35:'left_thumb2',
+    36:'left_thumb3',
+    37:'right_index1',
+    38:'right_index2',
+    39:'right_index3',
+    40:'right_middle1',
+    41:'right_middle2',
+    42:'right_middle3',
+    43:'right_pinky1',
+    44:'right_pinky2',
+    45:'right_pinky3',
+    46:'right_ring1',
+    47:'right_ring2',
+    48:'right_ring3',
+    49:'right_thumb1',
+    50:'right_thumb2',
+    51:'right_thumb3',
+	
 }
 
 function swap(json){
@@ -66,7 +130,7 @@ function reset(){
 
 }
 
-function loadModel(filePath,scene){
+function loadModel(filePath,scene,modelName){
 
 	const loader = new FBXLoader();
 	loader.load( filePath, function ( object ) {
@@ -87,7 +151,8 @@ function loadModel(filePath,scene){
         object.position.set(0,5,0)
         scene.add(object)
 
-        scene.userData.joints = swap(joints_index)
+        if(modelName == "mugl++" || modelName == "truth") scene.userData.joints = swap(joints_index)
+        else scene.userData.joints = swap(joints_index_muglold)
 
         for (let [key, value] of Object.entries(scene.userData.joints)) {
             scene.userData.joints[key] = object.getObjectByName(key)
@@ -119,7 +184,7 @@ function init() {
 
     const content = document.getElementById( 'content' );
 
-    let modelName = ["truth", "mugl", "action2motion", "sagcn"]
+    let modelName = ["truth", "mugl++", "mugl", "actor"]
     // let actionPaths = ["../actions/sample0.json", "../actions/quat_data2.json"]
 
     for ( let i = 0; i < 4; i ++ ) {
@@ -156,7 +221,7 @@ function init() {
         scene.userData.controls = controls;
 
         
-	    loadModel('/media/temp/TEST3.fbx',scene)
+	    loadModel('/media/temp/TEST3.fbx',scene, modelName[i])
         
         scene.add( new THREE.HemisphereLight( 0xaaaaaa, 0x444444 ) );
         
@@ -192,7 +257,7 @@ function updateSize() {
 }
 
 function get_time(){
-	return (30 - Math.min(30, parseInt((Date.now() - clock_start_time )/1000)))
+	return (45 - Math.min(45, parseInt((Date.now() - clock_start_time )/1000)))
 }
 
 function animate() {
@@ -202,7 +267,7 @@ function animate() {
 		SubmitGuess();
     }
     
-    if(!isSubmit) document.getElementById("time").innerHTML = "Time left :" + get_time() + "s"
+    if(!isSubmit) document.getElementById("time").innerHTML = "Time left :" + get_time() +"s"
     
     
 
@@ -234,10 +299,10 @@ function render() {
         // console.log(scene.userData.modelName)
 
         // so something moves
-        if(scene.userData.model == "truth" || scene.userData.model == "mugl"){
+        if(scene.userData.model == "truth" || scene.userData.model == "mugl++"){
         
             if(scene.userData.actions ){
-                for (let joint=0;joint<23;joint++){
+                for (let joint=0;joint<52;joint++){
                     let bone = joints_index[joint] 
                     if(scene.userData.joints == undefined)return;
 
@@ -247,10 +312,10 @@ function render() {
                     else{
         
                         scene.userData.joints[bone].setRotationFromQuaternion( new THREE.Quaternion(
-                            scene.userData.actions[timer][joint][0], 
-                            scene.userData.actions[timer][joint][1],
-                            scene.userData.actions[timer][joint][2],
-                            scene.userData.actions[timer][joint][3] 
+                            scene.userData.actions[timer][0][joint][0], 
+                            scene.userData.actions[timer][0][joint][1],
+                            scene.userData.actions[timer][0][joint][2],
+                            scene.userData.actions[timer][0][joint][3] 
                         ))
         
                     }
@@ -319,12 +384,20 @@ function on(){
 function SubmitGuess(){
 	
 	isSubmit = true;
+    let rank = "";
+    let items = document.querySelectorAll('.container .box');
 
+    items.forEach(function(item) {
+        rank += model_index_dict[item.innerHTML] 
+        rank += ","
+    })
+
+    
 	$.ajax({
 		url: 'submit1',
 		type: 'POST',
 		data: {
-			'rank': "MUGL,GROUND_TRUTH,SAGCN,Action2Motion"
+			'rank': rank
 		},
 		success: function(response){
             // alert("SUCcess")

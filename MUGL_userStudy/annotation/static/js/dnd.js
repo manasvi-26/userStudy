@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
     let items = document.querySelectorAll('.container .box');
     items.forEach(function(item) {
+      console.log(item.innerHTML)
       item.addEventListener('dragstart', handleDragStart, false);
       item.addEventListener('dragenter', handleDragEnter, false);
       item.addEventListener('dragover', handleDragOver, false);

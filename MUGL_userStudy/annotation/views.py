@@ -161,7 +161,12 @@ def render_next_video(request):
 		return JsonResponse({
 					'action' : guess.file.action,
 					'path' : guess.file.path,
-					'question' : question
+					'question' : question,
+					'option1' : guess.file.option1,
+					'option2' : guess.file.option2,
+					'option3' : guess.file.option3,
+					'option4' : guess.file.option4,
+
 				})
 
 	remaining = all_files.exclude(pk__in=done)
@@ -184,7 +189,11 @@ def render_next_video(request):
 	return JsonResponse({
 				'action' : video.action,
 				'path' : video.path,
-				'question' : question
+				'question' : question,
+				'option1' : video.option1,
+				'option2' : video.option2,
+				'option3' : video.option3,
+				'option4' : video.option4,
 			})
 
 

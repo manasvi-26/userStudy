@@ -6,6 +6,7 @@ from user.models import User
 class ActionFiles(models.Model):
     action = models.CharField(max_length=100)
     path = models.CharField(max_length=200)
+    person = models.CharField(max_length=200)
     modelName = models.CharField(max_length=200,default="MUGL")
 
     option1 = models.CharField(max_length=100,default="option1")

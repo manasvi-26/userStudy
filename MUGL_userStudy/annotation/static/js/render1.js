@@ -19,30 +19,59 @@ const sleep = time => {
 };
 
 let joints_index = {
-    0 : 'pelvis',
-    1 : 'left_hip',
-    2 : 'right_hip',
-    3 : 'spine1',
-    4 : 'left_knee',
-    5 : 'right_knee',
-    6 : 'spine2',
-    7 : 'left_ankle',
-    8 : 'right_ankle',
-    9 : 'spine3',
-    10: 'left_foot',
-    11: 'right_foot',
-    12: 'neck',
-    13: 'left_collar',
-    14: 'right_collar',
-    15: 'left_eye_smplhf',
-    16: 'left_shoulder',
-    17: 'right_shoulder',
-    18: 'left_elbow',
-    19: 'right_elbow',
-    20: 'left_wrist',
-    21: 'right_wrist',
-    22: 'right_eye_smplhf',
-    23: 'head'
+	0:'pelvis',
+    1:'left_hip',
+    2:'right_hip',
+    3:'spine1',
+    4:'left_knee',
+    5:'right_knee',
+	6:'spine2',
+    7:'left_ankle',
+    8:'right_ankle',
+    9:'spine3',
+    10:'left_foot',
+    11:'right_foot',
+    12:'neck',
+    13:'left_collar',
+    14:'right_collar',
+    15:'head',
+    16:'left_shoulder',
+    17:'right_shoulder',
+    18:'left_elbow',
+    19:'right_elbow',
+    20:'left_wrist',
+    21:'right_wrist',
+    22:'left_index1',
+    23:'left_index2',
+    24:'left_index3',
+    25:'left_middle1',
+    26:'left_middle2',
+    27:'left_middle3',
+    28:'left_pinky1',
+    29:'left_pinky2',
+    30:'left_pinky3',
+    31:'left_ring1',
+    32:'left_ring2',
+    33:'left_ring3',
+    34:'left_thumb1',
+    35:'left_thumb2',
+    36:'left_thumb3',
+    37:'right_index1',
+    38:'right_index2',
+    39:'right_index3',
+    40:'right_middle1',
+    41:'right_middle2',
+    42:'right_middle3',
+    43:'right_pinky1',
+    44:'right_pinky2',
+    45:'right_pinky3',
+    46:'right_ring1',
+    47:'right_ring2',
+    48:'right_ring3',
+    49:'right_thumb1',
+    50:'right_thumb2',
+    51:'right_thumb3',
+	
 }
 
 function swap(json){
@@ -115,7 +144,7 @@ function reset(){
 function loadAction(filePath){
 	
 	let loader2 = new THREE.FileLoader();
-	loader2.load( "/media/" + filePath, function( data ) {
+	loader2.load( "/"+filePath, function( data ) {
 		actions = JSON.parse(data);
 		actions = actions.rotation
 	})
@@ -245,6 +274,15 @@ function animate() {
 	if(Date.now() - start_time > 150 && !pause){
 		
 		if(counter + 1 == actions.length){
+
+			// reset to Tpose
+			for (let joint=0;joint<52;joint++){
+				let bone = joints_index[joint] 
+				joints[bone].setRotationFromQuaternion(
+					new THREE.Quaternion(0,0,0,1)
+				)
+			}
+
 			pause = true;
 			document.getElementById("submit_button").disabled = false;
 			document.getElementById("replay").disabled = false;
@@ -254,7 +292,7 @@ function animate() {
 		else{
 			counter = (counter + 1)%actions.length;
 			start_time = Date.now();
-			for (let joint=0;joint<23;joint++){
+			for (let joint=0;joint<52;joint++){
 				
 				let bone = joints_index[joint] 
 					if(joint == 0){
@@ -265,10 +303,10 @@ function animate() {
 
 
 						joints[bone].setRotationFromQuaternion( new THREE.Quaternion(
-							actions[counter][joint][0], 
-							actions[counter][joint][1],
-							actions[counter][joint][2],
-							actions[counter][joint][3] 
+							actions[counter][0][joint][0], 
+							actions[counter][0][joint][1],
+							actions[counter][0][joint][2],
+							actions[counter][0][joint][3] 
 						))
 					}
 			}	
@@ -328,7 +366,6 @@ function SubmitGuess(){
 				$('.' + guess.replaceAll('_',''))
 			else
 			{
-				console.log("red color is ",guess )
 				$('.' + guess.replaceAll('_',''))
 				$('.' + response.correctAnswer.replaceAll('_',''))
 			}
@@ -371,25 +408,22 @@ function render_video(){
 			question = response.question
 			action = action.replaceAll('_', ' ')
 			console.log(action)
-			$('#o1').html(action);
-			$('#option1').val(response.action);
+
+			$('#o1').html(response.option1.replaceAll('_',' '));
+			$('#option1').val(response.option1);
 			$('#o1').addClass(response.action.replaceAll('_',''));
 
-			$('#o2').html('wrong option 2');
-			$('#option2').val('wrongoption2');
-			$('#o2').addClass('wrongoption2');
+			$('#o2').html(response.option2.replaceAll('_',' '));
+			$('#option2').val(response.option2);
+			$('#o2').addClass(response.action.replaceAll('_',''));
 
-			$('#o3').html('wrong option 3');
-			$('#option3').val('wrongoption3');
-			$('#o3').addClass('wrongoption3');
+			$('#o3').html(response.option3.replaceAll('_',' '));
+			$('#option3').val(response.option3);
+			$('#o3').addClass(response.action.replaceAll('_',''));
 
-			$('#o4').html('wrong option 4');
-			$('#option4').val('wrongoption4');
-			$('#o4').addClass('wrongoption4');
-			
-			$('#option5').val('wrongoption5');
-			$('#o5').addClass('wrongoption5');
-
+			$('#o4').html(response.option4.replaceAll('_',' '));
+			$('#option4').val(response.option4);
+			$('#o4').addClass(response.action.replaceAll('_',''));
 
 			loadAction(path)
 		},
