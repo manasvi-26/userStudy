@@ -1,61 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Dumb Charades</title>
-    <meta charset="utf-8">
-    {% load static %}
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <head>
+
+        <title>Dumb Charades</title>
+        <meta charset="utf-8">
+        {% load static %}
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     
-    <!-- Compiled and minified CSS -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <!-- Compiled and minified CSS -->
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    
+          <!-- Website css -->
+          <link rel="stylesheet" href='{% static "css/style.css" %}'>
+    
+          <!-- Compiled and minified JavaScript -->
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-      <!-- Website css -->
-      <link rel="stylesheet" href='{% static "css/style.css" %}'>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-      <!-- Compiled and minified JavaScript -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <!-- <script src='{% static "js/nextround.js" %}'></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <style>
+        
+        <style>
 
-    </style>
+        </style>
+    </head>
+    <body style="background-color: white;"> 
+        <script src='{% static "js/modal.js" %}'></script>
+        
+        <div id="container">
 
-  </head>
-  <body style="background-color: white;">
-    <div id="container">
-      <h3 class="teal-text"> Welcome to Round 3 <span id='roundnumber'></span>
-        <br/>
-      </h3>
-      <br/>
-      <br/>
+            <h3 class="teal-text" style="margin-top:350px"> Welcome to Round 3 Of Dumb Charades<span id='roundnumber'></span>
+              <br/>
+              <br/>
+            </h3>
+            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+                About Game
+            </button>                            
+                
+            <a style="margin-left: 50px;;" type="button" class="btn btn-primary btn-lg" href="/annotation/round3">
+                Play Game
+            </a>
 
-      <p style="font-size:22px;" class="teal-text">In the round you will be given a set of 20 actions one after the other, performed by 4 human 3d models along with the action description</p>
-      <p style="font-size:22px;" class="teal-text">You are requested to rank the action performed by the 4 models from left to right; left being least realistic and right being the most realistic</p>
+        <div style="top:100px;min-height: 700px;"class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p style="font-size:20px;"  class="teal-text">
+                            You will be given a set of 5 actions one after the other, performed by human 3d model along with the action description.
+                        </p>
+                        <br/>
+                        <img src="/media/gifs/r31.gif" width="620" height="380" frameBorder="0" allowFullScreen/>
+                        <br/>
+                        <p style="font-size:20px;"  class="teal-text">
+                            You need to rank the action performed by the 4 models from left to right; left being least realistic and right being the most realistic
+                        </p>
+                    </div>
+                    
+                    <div class="model-footer">
+                        <button type="button" disabled class="btn btn-default btn-prev">Prev</button>
+                        <button type="button" class="btn btn-default btn-next">Next</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      <!-- <iframe src="https://giphy.com/embed/11sBLVxNs7v6WA" width="480" height="217" frameBorder="0" class="giphy-embed" allowFullScreen></iframe> -->
-      <img src="/media/gifs/r31.gif" width="620" height="350" frameBorder="0" allowFullScreen/>
-      
-      <br/>
-      <br/>
+       
+        <div style="top:100px; min-height: 700px;"class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p style="font-size:20px;"  class="teal-text">
+                            You can rank the models by dragging and dropping the options in your prefered order of realisticness
+                        </p>
+                        <br/>
+                        <img src="/media/gifs/r32.gif" width="620" height="380" frameBorder="0" allowFullScreen/>
+                        <br/>
+                        <br/>
+                        <br/>
+                    </div>
+                    <div class="model-footer">
+                        <button type="button" class="btn btn-default btn-prev">Prev</button>
+                        <button type="button" class="btn btn-default btn-next">Next</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      <p style="font-size: 22px;"class="teal-text">You can rank the models by dragging and dropping the options in your prefered order of realisticness</p>
-      <!-- <iframe src="https://giphy.com/embed/11sBLVxNs7v6WA" width="480" height="217" frameBorder="0" class="giphy-embed" allowFullScreen></iframe> -->
-      <img src="/media/gifs/r32.gif" width="670" height="250" frameBorder="0" allowFullScreen/>
-      
-      <br/>
-      <br/>
-
-      <p style="font-size:22px;"class="teal-text" style="font-weight: bold;">Please note that you have only 30 seconds to submit your answer,after which the next action gets rendered</p>
-      
-      <p style="font-size:22px;"class="teal-text">
-        Press the button below to continue to the next round
-      </p>
-        <form action="/annotation/round3">
-        <div class="input-field">
-        <input type="submit" class="btn" id="btnSubmit" value = "Proceed">
-        </div>  
-      </form>
+        <div style="top:100px; min-height: 700px;"class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p style="font-size:20px;"  class="teal-text">
+                            You can also Zoom in or Zoom out of the action
+                        </p>
+                        <br/>
+                        <img src="/media/gifs/r33.gif" width="620" height="380" frameBorder="0" allowFullScreen/>
+                        <br/>
+                        <br/>
+                        <br/>
+                    </div>
+                    <div class="model-footer">
+                        <button type="button" class="btn btn-default btn-prev" >Prev</button>
+                        <!-- <button type="button" class="btn btn-default">Play Game</button> -->
+                        <a type="button" class="btn btn-default" href="/annotation/round3">
+                            Play Game
+                        </a>                            
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-  </body>
-</html>
+
+
+    </body>
+  
+
+  </html>

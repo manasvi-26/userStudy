@@ -98,6 +98,8 @@ def get_details(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def render_next_video3(request):
 
+	print("RENDER NEXT VIDEO 3 should get called")
+
 	user, guess_class, all_files,current_round = get_details(request)
 	# print(current_round)
 	pending = guess_class.objects.filter(pending=True, user=user)
@@ -108,9 +110,17 @@ def render_next_video3(request):
 	if guess is not None :
 		model_action_files = guess.files.all()
 		print("model files in guess is", model_action_files)
+
+		print("MUGL ++  --->>> ", model_action_files[0].rotationPath)
+		print("TRUTH --->>> ", model_action_files[1].rotationPath)
+		print("MUGL OLD --->>> ", model_action_files[2].rotationPath)
+		print("ACTOR --->>> ", model_action_files[3].rotationPath)
+
 		return JsonResponse({
-			'mugl_path' : model_action_files[0].path,
-			'truth_path' : model_action_files[1].path,
+			'mugl_path' : model_action_files[0].rotationPath,
+			'truth_path' : model_action_files[1].rotationPath,
+			'mugl_old_path' : model_action_files[2].rotationPath,
+			'actor_path' : model_action_files[3].rotationPath,
 			'action' :  model_action_files[0].action,
 			'question' : question
 
@@ -118,23 +128,34 @@ def render_next_video3(request):
 
 	remaining = all_files.exclude(pk__in=done)
 
+	print("REMAINING FILES ", len(remaining.all()))
+
 	if remaining.all().first() is None: 
 		user.current_round += 1
 		user.save()
 		return HttpResponse('/annotation/end', status=404)
 
-	next_videos = remaining.all()[:2]
+	next_videos = remaining.all()[:4]
 
 	g = guess_class.objects.create(user=user)
 	g.files.add(next_videos[0])
 	g.files.add(next_videos[1])
+	g.files.add(next_videos[2])
+	g.files.add(next_videos[3])
 	g.save()
 	print("NEW FILES IN GUESS",g.files.all())
 
+	print("MUGL ++  --->>> ", next_videos[0].rotationPath)
+	print("TRUTH --->>> ", next_videos[1].rotationPath)
+	print("MUGL OLD --->>> ", next_videos[2].rotationPath)
+	print("ACTOR --->>> ", next_videos[3].rotationPath)
+
 	return JsonResponse({
 				'action' : next_videos[0].action,
-				'mugl_path' : next_videos[0].path,
-				'truth_path' : next_videos[1].path,
+				'mugl_path' : next_videos[0].rotationPath,
+				'truth_path' : next_videos[1].rotationPath,
+				'mugl_old_path' : next_videos[2].rotationPath,
+				'actor_path' : next_videos[3].rotationPath,
 				'question' : question
 			
 			})
@@ -160,7 +181,9 @@ def render_next_video(request):
 		# print("RETURNING SAME FILE AGAIN",guess.file.action)
 		return JsonResponse({
 					'action' : guess.file.action,
-					'path' : guess.file.path,
+					'rotationPath' : guess.file.rotationPath,
+					'translationPath' : guess.file.translationPath,
+					'person' : guess.file.person,
 					'question' : question,
 					'option1' : guess.file.option1,
 					'option2' : guess.file.option2,
@@ -188,7 +211,9 @@ def render_next_video(request):
 
 	return JsonResponse({
 				'action' : video.action,
-				'path' : video.path,
+				'rotationPath' : video.rotationPath,
+				'translationPath' : video.translationPath,
+				'person' : video.person,
 				'question' : question,
 				'option1' : video.option1,
 				'option2' : video.option2,

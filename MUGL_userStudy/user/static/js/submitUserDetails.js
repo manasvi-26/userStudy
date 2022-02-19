@@ -13,6 +13,11 @@ function submitUserDetails() {
 	age = $('#age').val();
 	aff = $('#affiliation').val();
 	gender = $('#gender').val();
+	console.log(name, age)
+	if(name == "" || age == ""){
+		alert("Please Fill All The Required Details")
+		return
+	}
     
     $.ajax({
         url : 'addNewUser',

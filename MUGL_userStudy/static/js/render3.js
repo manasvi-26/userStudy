@@ -1,6 +1,6 @@
 let canvas, renderer;
 const scenes = [];
-let model = undefined;
+let models = []
 
 let timer= 0; 
 let start_time = Date.now();
@@ -19,7 +19,7 @@ let model_index_dict = {
     'Scene 4' : "ACTOR",
 }
 
-let joints_index_muglold = {
+let joints_index_withoutFinger= {
 
     0 : 'pelvis',
     1 : 'left_hip',
@@ -106,28 +106,38 @@ let joints_index = {
 function swap(json){
 	var ret = {};
 	for(var key in json){
-	  ret[json[key]] = undefined;
+	  ret[json[key]] = "bone";
 	}
 	return ret;
 }
 
 // let joints = swap(joints_index)
 
+function traverse(bone,joints, jointswithoutFinger){
+
+
+	for(let i=0;i<bone.children.length;i++){
+		let child = bone.children[i]
+        
+        if(joints[child.name] == undefined && jointswithoutFinger[child.name] == undefined){
+			bone.remove(child)
+		}
+		traverse(child,joints, jointswithoutFinger)
+	}
+}
+
 function loadAction(filePath,scene){
     let loader2 = new THREE.FileLoader();
 	loader2.load( "/media/" + filePath, function( data ) {
-        console.log(filePath)
 		let actions = JSON.parse(data);
         actions = actions.rotation
         scene.userData.actions = actions;
-        // console.log(scene.userData.actions)
     })
 }
 function reset(){
 
 	isSubmit = false
 	clock_start_time = Date.now() // reset timer
-
 }
 
 function loadModel(filePath,scene,modelName){
@@ -145,19 +155,34 @@ function loadModel(filePath,scene,modelName){
 
         } );
 
-        console.log(scene)
-        model = object;
-        object.scale.set(0.15, 0.15, 0.15)
+        object.scale.set(15, 15, 15)
         object.position.set(0,5,0)
+
+
+        
+        if(modelName == "mugl++" || modelName == "truth") scene.userData.joints = swap(joints_index)
+        else scene.userData.joints = swap(joints_index_withoutFinger)
+
+		traverse(object.children[0], swap(joints_index), swap(joints_index_withoutFinger))
         scene.add(object)
 
-        if(modelName == "mugl++" || modelName == "truth") scene.userData.joints = swap(joints_index)
-        else scene.userData.joints = swap(joints_index_muglold)
 
         for (let [key, value] of Object.entries(scene.userData.joints)) {
             scene.userData.joints[key] = object.getObjectByName(key)
         }
-    
+        
+        const helper = new THREE.SkeletonHelper( object );
+        scene.add( helper );
+        
+        const axesHelper = new THREE.AxesHelper( 10 );
+		// scene.add( axesHelper );
+		
+		let skeletonHelper = new THREE.SkeletonHelper(object);
+		scene.add(skeletonHelper)
+
+
+		models.push(skeletonHelper);
+
 
     } );
     
@@ -219,9 +244,12 @@ function init() {
         // controls.minDistance = 2;
         // controls.maxDistance = 5;
         scene.userData.controls = controls;
+        
+        scene.timer = 0;
+        scene.start_time = Date.now()
 
         
-	    loadModel('/media/temp/TEST3.fbx',scene, modelName[i])
+	    loadModel('/media/temp/skeleton2.fbx',scene, modelName[i])
         
         scene.add( new THREE.HemisphereLight( 0xaaaaaa, 0x444444 ) );
         
@@ -257,7 +285,7 @@ function updateSize() {
 }
 
 function get_time(){
-	return (45 - Math.min(45, parseInt((Date.now() - clock_start_time )/1000)))
+	return (20000 - Math.min(20000, parseInt((Date.now() - clock_start_time )/1000)))
 }
 
 function animate() {
@@ -275,6 +303,7 @@ function animate() {
     requestAnimationFrame( animate );
 
 }
+
 
 function render() {
 
@@ -296,11 +325,20 @@ function render() {
     
 
     scenes.forEach( function ( scene ) {
-        // console.log(scene.userData.modelName)
+        if(scene.userData.actions == undefined)return;
 
         // so something moves
-        if(scene.userData.model == "truth" || scene.userData.model == "mugl++"){
+
         
+
+        if(Date.now() - scene.start_time > 100){
+            scene.timer = (scene.timer + 1)%scene.userData.actions.length;
+            scene.start_time = Date.now();
+           
+        }
+
+        if(scene.userData.model == "truth" || scene.userData.model == "mugl++"){
+            
             if(scene.userData.actions ){
                 for (let joint=0;joint<52;joint++){
                     let bone = joints_index[joint] 
@@ -312,16 +350,58 @@ function render() {
                     else{
         
                         scene.userData.joints[bone].setRotationFromQuaternion( new THREE.Quaternion(
-                            scene.userData.actions[timer][0][joint][0], 
-                            scene.userData.actions[timer][0][joint][1],
-                            scene.userData.actions[timer][0][joint][2],
-                            scene.userData.actions[timer][0][joint][3] 
+                            scene.userData.actions[scene.timer][0][joint][0], 
+                            scene.userData.actions[scene.timer][0][joint][1],
+                            scene.userData.actions[scene.timer][0][joint][2],
+                            scene.userData.actions[scene.timer][0][joint][3] 
                         ))
         
                     }
                 }	
             }
         }
+
+        if(scene.userData.model == "mugl"){
+            if(scene.userData.actions ){
+               
+                for (let joint=0;joint<24;joint++){
+                    let bone = joints_index_withoutFinger[joint] 
+                    if(scene.userData.joints == undefined)return;
+
+                    if(joint == 0){
+                        continue
+                    }
+                    else{
+        
+                        scene.userData.joints[bone].setRotationFromQuaternion( new THREE.Quaternion(
+                            scene.userData.actions[scene.timer][joint][0], 
+                            scene.userData.actions[scene.timer][joint][1],
+                            scene.userData.actions[scene.timer][joint][2],
+                            scene.userData.actions[scene.timer][joint][3] 
+                        ))
+        
+                    }
+                }
+            }
+        }
+
+        if(scene.userData.model == "actor"){
+
+            for ( let person = 0; person < 1;person++){
+                if(scene.userData.joints['pelvis'] === undefined)break;
+
+                for (let joint=0;joint<21;joint++){
+        
+                    let bone = joints_index_withoutFinger[joint]; 
+                    scene.userData.joints[bone].rotation.x = scene.userData.actions[scene.timer][0][joint][0]; 
+                    scene.userData.joints[bone].rotation.y = scene.userData.actions[scene.timer][0][joint][1]; 
+                    scene.userData.joints[bone].rotation.z = scene.userData.actions[scene.timer][0][joint][2]; 
+                
+                }
+            }	
+        
+        }
+        
         
 
 
@@ -436,7 +516,10 @@ function render_video(){
 
 			let action = response.action
 			let mugl_path = response.mugl_path
-            let truth_path = response.truth_path
+            let truth_path = response.truth_path            
+            let mugl_old_path = response.mugl_old_path
+            let actor_path = response.actor_path
+
             let question = response.question
 	        document.getElementById("question").innerHTML = "Question :" + question
 
@@ -446,15 +529,13 @@ function render_video(){
             
             paths.push(response.truth_path)
             paths.push(response.mugl_path)
-            paths.push(response.truth_path)
-            paths.push(response.mugl_path)
+            paths.push(response.mugl_old_path)
+            paths.push(response.actor_path)
 
-            console.log(mugl_path,truth_path)
             let count = 0
             scenes.forEach( function ( scene ) {
                 loadAction(paths[count],scene)
                 count+=1
-                console.log(count)
             })
             reset();
 		},

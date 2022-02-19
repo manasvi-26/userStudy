@@ -29,13 +29,12 @@ def addNewUser(request):
 	age = request.POST.get('age','')
 	aff = request.POST.get('affiliation','')
 	gender = request.POST.get('gender','')
+
 	question_set = (User.objects.count() // 5) + 1
 
 	user = User.objects.create(name=name, age=age, aff=aff, gender=gender,question_set=question_set,current_round=1)
-	# console.log('should get called')
 	user.save()
 
 	user_id = User.objects.count()
 	request.session['user'] = user_id
-	# print("NEW USER IS ---", user_id)
 	return HttpResponse('/annotation/')

@@ -1,7 +1,7 @@
 let camera, scene, renderer;
 
 let mixer;
-let actions,action_joints;
+let rotation, translation;
 let counter= 0; 
 let start_time = Date.now();
 let pause = false;
@@ -10,9 +10,10 @@ let replays = 0;
 var clock = new THREE.Clock();
 let clock_start_time;
 let isSubmit = false;
-let model;
 let start = false;
 let question;
+let models = []
+let total_person;
 
 const sleep = time => {
 	return new Promise((resolve) => setTimeout(resolve, time));
@@ -74,16 +75,29 @@ let joints_index = {
 	
 }
 
+
+function traverse(bone){
+	for(let i=0;i<bone.children.length;i++){
+		let child = bone.children[i]
+		console.log(child.name)
+		if(child.name.includes("end")){
+			bone.remove(child)
+			console.log("removing..", child.name)
+		}
+		traverse(child)
+	}
+}
+
+
 function swap(json){
 	var ret = {};
 	for(var key in json){
-	  ret[json[key]] = undefined;
+	  ret[json[key]] = [];
 	}
 	return ret;
 }
 
 let joints = swap(joints_index)
-let Tpose = []
 
 
 
@@ -104,20 +118,27 @@ function loadModel(filePath){
 			}
 
 		} );
+
+		traverse(object.children[0])
+
+
 		
 		scene.add( object );
 
 		for (let [key, value] of Object.entries(joints)) {
-			joints[key] = object.getObjectByName(key)
-			Tpose.push(joints[key].quaternion)
+			joints[key].push(object.getObjectByName(key))
 		}
 
-		console.log(Tpose)
-					
-		object.position.y += 130
-		model = object
+		object.position.z -= 40
+		object.position.y += 80
+
 		const axesHelper = new THREE.AxesHelper( 10 );
 		scene.add( axesHelper );
+		
+		let skeletonHelper = new THREE.SkeletonHelper(object);
+		scene.add(skeletonHelper)
+
+		models.push(skeletonHelper);
 
 	} );
 
@@ -133,7 +154,9 @@ function reset(){
 	document.getElementById("submit_button").disabled = true;
 	document.getElementById("replay").disabled = true;
 
-
+	// for(let i=0;i<2;i++){
+	// 	models[i].visible = true;
+	// }
 	let o5 = $("#o5")
 	console.log(o5)
 	console.log($("#o5").prop('checked', true)) // check none of these option
@@ -141,13 +164,21 @@ function reset(){
 
 }
 
-function loadAction(filePath){
+function loadAction(rotationPath, translationPath){
 	
-	let loader2 = new THREE.FileLoader();
-	loader2.load( "/"+filePath, function( data ) {
-		actions = JSON.parse(data);
-		actions = actions.rotation
+	console.log("IN LOAD ACTION")
+	let loader = new THREE.FileLoader();
+	loader.load( "/"+rotationPath, function( data ) {
+		data = JSON.parse(data);
+		rotation = data.rotation
+		
 	})
+
+	loader.load( "/"+translationPath, function( data ) {
+		data = JSON.parse(data);
+		translation = data.translation
+	})
+
 	reset();
 	animate();
 
@@ -159,7 +190,7 @@ function init() {
 	document.body.appendChild( container );
 
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-	camera.position.set( 20, 50, 400 );
+	camera.position.set( 50, 100, 400 );
     camera.lookAt(0,0,0)
 
 
@@ -186,7 +217,8 @@ function init() {
 
 
 	// model
-	loadModel('/media/temp/TEST3.fbx')
+	loadModel('/media/temp/skeleton.fbx')
+	loadModel('/media/temp/skeleton.fbx')
 
 
 	renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -216,21 +248,24 @@ function onWindowResize() {
 
 function toggle_pause(){
 	
-	if(counter + 1 == actions.length)counter = 0;
+	if(counter + 1 == rotation.length)counter = 0;
 	pause = !pause
 	pause_cnt += 1
 }
 
 function left(){
-	model.rotation.set(0,-1.5,0)
+	for(let i=0;i<total_persons;i++)
+		models[i].rotation.set(0,-1.5,0)
 }
 
 function right(){
-	model.rotation.set(0,1.5,0)
+	for(let i=0;i<total_persons;i++)
+		models[i].rotation.set(0,1.5,0)
 }
 
 function front(){
-	model.rotation.set(0,0,0)
+	for(let i=0;i<total_persons;i++)
+		models[i].rotation.set(0,0,0)
 }
 
 function replay(){
@@ -270,17 +305,22 @@ function animate() {
 
 	if(!isSubmit) document.getElementById("time").innerHTML = "Time left :" + timer() + "s"
 	
-
+    if(total_person == 1 & models.length > 1){
+        models[1].visible = false;
+	}
+	
 	if(Date.now() - start_time > 150 && !pause){
-		
-		if(counter + 1 == actions.length){
+		if(rotation == undefined)return;
+		if(counter + 1 == rotation.length){
 
 			// reset to Tpose
-			for (let joint=0;joint<52;joint++){
-				let bone = joints_index[joint] 
-				joints[bone].setRotationFromQuaternion(
-					new THREE.Quaternion(0,0,0,1)
-				)
+			for(let person =0;person < total_person;person++){
+				for (let joint=0;joint<52;joint++){
+					let bone = joints_index[joint] 
+					joints[bone][person].setRotationFromQuaternion(
+						new THREE.Quaternion(0,0,0,1)
+					)
+				}
 			}
 
 			pause = true;
@@ -290,26 +330,44 @@ function animate() {
 		}
 
 		else{
-			counter = (counter + 1)%actions.length;
+			counter = (counter + 1)%rotation.length;
 			start_time = Date.now();
-			for (let joint=0;joint<52;joint++){
+
+		    if(total_person == 1 & models.length > 1){
+		        models[1].visible = false;
+			}
+			
+			for ( let person = 0; person < total_person;person++){
 				
-				let bone = joints_index[joint] 
-					if(joint == 0){
+				if(joints['pelvis'][person] === undefined)break;
+				
+				if(total_person == 2){
+				joints['pelvis'][person].position.set(
+					translation[counter][person][0][0],
+					0,
+					translation[counter][person][0][1], 
+				)}
+				
 
-						continue
+				for (let joint=0;joint<52;joint++){
+				
+					let bone = joints_index[joint] 
+					if (joint == 0 & total_person==1){
+						continue;
 					}
-					else{
+					console.log(counter)
+					joints[bone][person].setRotationFromQuaternion( new THREE.Quaternion(
+						rotation[counter][person][joint][0], 
+						rotation[counter][person][joint][1],
+						rotation[counter][person][joint][2],
+						rotation[counter][person][joint][3] 
+					))
+					if(joint == 0) joints[bone][person].rotation.x = 0
 
+				}	
+			}
 
-						joints[bone].setRotationFromQuaternion( new THREE.Quaternion(
-							actions[counter][0][joint][0], 
-							actions[counter][0][joint][1],
-							actions[counter][0][joint][2],
-							actions[counter][0][joint][3] 
-						))
-					}
-			}	
+			
 		}
 	}
 
@@ -404,8 +462,10 @@ function render_video(){
 			console.log(response)
 
 			let action = response.action
-			let path = response.path
+		
 			question = response.question
+			total_person = response.person
+
 			action = action.replaceAll('_', ' ')
 			console.log(action)
 
@@ -425,7 +485,10 @@ function render_video(){
 			$('#option4').val(response.option4);
 			$('#o4').addClass(response.action.replaceAll('_',''));
 
-			loadAction(path)
+			let rotationPath = response.rotationPath
+			let translationPath = response.translationPath
+
+			loadAction(rotationPath, translationPath)
 		},
 		error: function(response){
 			console.log(response)
